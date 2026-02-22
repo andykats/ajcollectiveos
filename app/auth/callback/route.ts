@@ -21,9 +21,11 @@ export async function GET(request: Request) {
           const match = cookie.match(new RegExp(`(^| )${name}=([^;]*)`))
           return match ? match[2] : undefined
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         set(_name: string, _value: string, _options: { [key: string]: unknown }) {
           // Cookies will be set by the response
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         remove(_name: string, _options: { [key: string]: unknown }) {
           // Cookies will be removed by the response
         },
