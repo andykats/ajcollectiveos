@@ -11,18 +11,15 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
+        getAll() {
           const cookie = request.headers.get('cookie')
-          if (!cookie) return undefined
-          const match = cookie.match(new RegExp(`(^| )${name}=([^;]*)`))
-          return match ? match[2] : undefined
+          if (!cookie) return []
+          return cookie.split(';').map(cookie => {
+            const [name, ...rest] = cookie.trim().split('=')
+            return { name, value: rest.join('=') }
+          })
         },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        set(_name: string, _value: string, _options: { [key: string]: unknown }) {
-          // Cookies will be handled by the response
-        },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        remove(_name: string, _options: { [key: string]: unknown }) {
+        setAll() {
           // Cookies will be handled by the response
         },
       },

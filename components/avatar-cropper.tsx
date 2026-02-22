@@ -27,6 +27,7 @@ export function AvatarCropper({
   minWidth = 200,
   minHeight = 200,
 }: AvatarCropperProps) {
+  console.log('AvatarCropper: Component rendered, open:', open, 'imageSrc:', imageSrc?.substring(0, 50))
   const [crop, setCrop] = useState<Crop>()
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [scale, setScale] = useState(1)
@@ -129,15 +130,22 @@ export function AvatarCropper({
   }, [completedCrop, rotate, scale])
 
   const handleSave = async () => {
+    console.log('AvatarCropper: Save button clicked')
     try {
+      console.log('AvatarCropper: Getting cropped image...')
       const croppedBlob = await getCroppedImg()
+      console.log('AvatarCropper: Cropped blob received:', croppedBlob.size)
+      
       const fileName = `avatar-${Date.now()}.jpg`
       const croppedFile = new File([croppedBlob], fileName, {
         type: "image/jpeg",
         lastModified: Date.now(),
       })
       
+      console.log('AvatarCropper: Calling onCropComplete with file:', croppedFile.name)
       onCropComplete(croppedFile)
+      console.log('AvatarCropper: onCropComplete called successfully')
+      
       onOpenChange(false)
       
       // Reset crop state
@@ -145,8 +153,9 @@ export function AvatarCropper({
       setCompletedCrop(undefined)
       setScale(1)
       setRotate(0)
+      console.log('AvatarCropper: Save completed successfully')
     } catch (error) {
-      console.error("Error cropping image:", error)
+      console.error("AvatarCropper: Error cropping image:", error)
     }
   }
 
@@ -219,6 +228,7 @@ export function AvatarCropper({
                 minHeight={minHeight}
                 className="max-w-full"
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   ref={imgRef}
                   alt="Crop me"

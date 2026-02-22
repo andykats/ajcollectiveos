@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 
-import { NavUser } from "@/components/nav-user"
+
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +16,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar"
-import { CommandIcon, GlobeIcon, FileTextIcon, LayoutDashboardIcon } from "lucide-react"
+import { CommandIcon, FileTextIcon, LayoutDashboardIcon, SettingsIcon, UsersIcon, PaletteIcon } from "lucide-react"
 
 interface UserData {
   name: string
@@ -83,21 +83,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
+          {/* Dashboard link outside subgroup */}
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton render={<Link href="/dashboard" />}>
+                <LayoutDashboardIcon className="size-4" />
+                <span>Dashboard</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          
           <SidebarGroup>
             <SidebarGroupLabel>Essential</SidebarGroupLabel>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton render={<Link href="/dashboard" />}>
-                  <LayoutDashboardIcon className="size-4" />
-                  <span>Dashboard</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton render={<Link href="/" />}>
-                  <GlobeIcon className="size-4" />
-                  <span>Website</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton render={<Link href="/cms" />}>
                   <FileTextIcon className="size-4" />
@@ -129,29 +127,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
               render={<a href="#" />}
             >
-              <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">Acme Inc.</span>
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">AJ</span>
+                </div>
+                <span className="text-base font-semibold">AJ Collective OS</span>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* Minimal navigation - only essential items */}
+        {/* Dashboard link outside subgroup */}
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton render={<Link href="/dashboard" />}>
+              <LayoutDashboardIcon className="size-4" />
+              <span>Dashboard</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        
+        {/* Essential group with remaining items */}
         <SidebarGroup>
           <SidebarGroupLabel>Essential</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton render={<Link href="/dashboard" />}>
-                <LayoutDashboardIcon className="size-4" />
-                <span>Dashboard</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton render={<Link href="/" />}>
-                <GlobeIcon className="size-4" />
-                <span>Website</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton render={<Link href="/cms" />}>
                 <FileTextIcon className="size-4" />
@@ -160,9 +160,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+
+        {/* Settings group */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Settings</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton render={<Link href="/users" />}>
+                <UsersIcon className="size-4" />
+                <span>Users</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton render={<Link href="/branding" />}>
+                <PaletteIcon className="size-4" />
+                <span>Branding</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        {/* User moved to site header */}
       </SidebarFooter>
     </Sidebar>
   )

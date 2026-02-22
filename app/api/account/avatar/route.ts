@@ -123,8 +123,14 @@ export async function POST(request: NextRequest) {
 
     if (uploadError) {
       console.error("Upload error:", uploadError)
+      console.error("Upload details:", {
+        bucket: BUCKET_NAME,
+        filePath: filePath,
+        fileSize: file.size,
+        fileType: file.type
+      })
       return NextResponse.json({ 
-        error: "Failed to upload file" 
+        error: `Failed to upload file: ${uploadError.message}` 
       }, { status: 500 })
     }
 
@@ -133,17 +139,52 @@ export async function POST(request: NextRequest) {
       .from(BUCKET_NAME)
       .getPublicUrl(filePath)
 
-    // Update user metadata with new avatar URL
-    const { error: updateError } = await supabase.auth.updateUser({
-      data: { avatar_url: publicUrl }
-    })
+    console.log(`File uploaded to: ${filePath}, public URL: ${publicUrl}`)
 
-    if (updateError) {
-      console.error("Update user error:", updateError)
-      return NextResponse.json({ 
-        error: "Failed to update user avatar" 
-      }, { status: 500 })
+    // Update user profile with new avatar URL
+    // First check if profile exists
+    const { data: existingProfile } = await supabase
+      .from('user_profiles')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .single()
+
+    if (existingProfile) {
+      // Update existing profile
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({ 
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id)
+
+      if (updateError) {
+        console.error("Update user profile error:", updateError)
+        return NextResponse.json({ 
+          error: "Failed to update user avatar" 
+        }, { status: 500 })
+      }
+    } else {
+      // Create new profile with avatar URL
+      const { error: createError } = await supabase
+        .from('user_profiles')
+        .insert({
+          user_id: user.id,
+          email: user.email || '',
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+
+      if (createError) {
+        console.error("Create user profile error:", createError)
+        return NextResponse.json({ 
+          error: "Failed to create user profile" 
+        }, { status: 500 })
+      }
     }
+
+    console.log(`Avatar uploaded successfully for user ${user.id}: ${publicUrl}`)
 
     // Return success response
     return NextResponse.json({
